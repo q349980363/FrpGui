@@ -8,8 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace FrpGui {
-    class IniFile   // revision 11
-    {
+    // revision 11
+    public class IniFile {
         string Path;
 
         [DllImport("kernel32")]
@@ -44,6 +44,8 @@ namespace FrpGui {
             var length = GetPrivateProfileString_Buffer(Section, Key, "", buffer, 255, Path);
             var list = Encoding.ASCII.GetString(buffer.Take(length).ToArray()).Split('\0').ToList();
             list.Sort();
+            list = list.Select(x => x.Trim()).ToList();
+            list = list.Where(v => !string.IsNullOrEmpty(v)).Where(v => v[0] != '#').ToList();
             return list;
         }
 

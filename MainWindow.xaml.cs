@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,20 +18,26 @@ namespace FrpGui {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window {
+    public partial class MainWindow : Window, INotifyPropertyChanged {
         public string[] EXEList { get; set; }
         public string[] ConfigList { get; set; }
-        public List<string> SectionList { get; set; }
+        public BindingList<IniData> SectionList { get; set; } = new BindingList<IniData>();
+        public IniData Common { get; set; }
         public MainWindow() {
             InitFile();
             DataContext = this;
             InitializeComponent();
         }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
         void LoadConfig(string path) {
             var ini = new IniFile(path);
-            var SectionList = ini.ReadList(null, null);
-            SectionList.Remove("common");
-            this.SectionList = SectionList;
+            var sectionList = ini.ReadList(null, null);
+            sectionList.Remove("common");
+            Common = new IniData(ini, "common");
+            this.SectionList.Clear();
+            sectionList.Select(v => new IniData(ini, v)).ToList().ForEach(v => this.SectionList.Add(v));
         }
 
         void InitFile() {

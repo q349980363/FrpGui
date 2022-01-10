@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FrpGui"
         mc:Ignorable="d"
-        Title="Frp Gui" Height="600" Width="500">
+        Title="Frp Gui" Height="800" Width="400">
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBarItem>Frp GUI 0.0.1</StatusBarItem>
@@ -36,12 +36,12 @@
         </GroupBox>
 
 
-        <!--<local:IniSectionControl DockPanel.Dock="Top"></local:IniSectionControl>-->
+        <local:IniSectionControl DockPanel.Dock="Top" DataContext="{Binding Common}"></local:IniSectionControl>
         <ScrollViewer >
             <ItemsControl ItemsSource="{Binding SectionList}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <local:IniSectionControl DataContext="{Binding .}"></local:IniSectionControl>
+                        <local:IniSectionControl></local:IniSectionControl>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

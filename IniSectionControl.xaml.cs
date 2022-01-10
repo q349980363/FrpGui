@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,37 +21,54 @@ namespace FrpGui {
     public partial class IniSectionControl : UserControl {
         public IniSectionControl() {
             InitializeComponent();
-            groupBox.Header = translation(Section);
+            this.DataContextChanged += IniSectionControl_DataContextChanged;
+            itemsControl.ItemsSource = KeyList;
         }
 
+        public BindingList<IniData> KeyList { get; set; } = new BindingList<IniData>();
+        private void IniSectionControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
+            groupBox.Header = Header;
+            if (Data == null) {
+                return;
+            }
+            var keyList = Data.File.ReadList(null, Section);
+            KeyList.Clear();
+            foreach (var key in keyList) {
+                KeyList.Add(new IniData(Data, key));
+            }
+        }
 
         public string Section {
             get {
-                if (this.DataContext == null) {
-                    return "";
-                } else {
-                    return this.DataContext as string;
-                }
+                return Data == null ? "" : Data.Section;
+            }
+        }
+        public IniData? Data {
+            get {
+                return this.DataContext as IniData;
             }
         }
         public string Header {
             get {
-                return $"{translation(Section)} [{Section}]";
+                if (translation(Section) == Section) {
+                    return Section;
+                } else {
+                    return $"{Section} [{translation(Section)}]";
+                }
             }
         }
 
         string translation(string txt) {
             switch (txt) {
-                case "公共设置":
+                case "common":
+                    return "公共设置";
                 default:
                     return txt;
             }
         }
 
+        private void ListView_MouseDown(object sender, MouseButtonEventArgs e) {
 
-
-
-
-
+        }
     }
 }
