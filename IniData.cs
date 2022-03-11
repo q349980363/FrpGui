@@ -10,7 +10,17 @@ namespace FrpGui {
         public IniFile File { get; set; }
         public string Section { get; set; }
         public string? Key { get; set; }
+        public string? KeyWpf => Key?.Replace("_", "__");
         public string? Value { get; set; }
+
+        public IniData() {
+        }
+        public IniData(string FilePath) {
+            this.File = new IniFile(FilePath);
+        }
+        public IniData(IniFile File) {
+            this.File = File;
+        }
 
         public IniData(IniFile File, string Section) {
             this.File = File;
@@ -24,11 +34,9 @@ namespace FrpGui {
             Value = File.Read(Key, Section);
         }
 
-
-    
-
-
-
+        public void SetValue(string value) {
+            File.Write(Key, value, Section);
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
     }

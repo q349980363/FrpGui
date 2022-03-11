@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 namespace FrpGui {
     // revision 11
     public class IniFile {
+        static IniFile() {
+        }
+
         string Path;
 
         [DllImport("kernel32")]
@@ -21,7 +24,7 @@ namespace FrpGui {
         static extern int GetPrivateProfileString_Buffer(string Section, string Key, string Default, byte[] RetVal, int Size, string FilePath);
 
 
-
+        readonly Encoding GB2132 = Encoding.GetEncoding("gbk");
 
         public IniFile(string IniPath) {
             Path = new FileInfo(IniPath).FullName;
@@ -33,17 +36,15 @@ namespace FrpGui {
             RetVal.Length = 255;
             var bytes = new byte[255];
             var length = GetPrivateProfileString(Section, Key, "", RetVal, 255, Path);
-
-            var str = Encoding.ASCII.GetString(bytes);
-
+            var str = GB2132.GetString(bytes);
             return RetVal.ToString(0, length);
         }
 
         public List<string> ReadList(string Key, string Section) {
             var buffer = new byte[255];
             var length = GetPrivateProfileString_Buffer(Section, Key, "", buffer, 255, Path);
-            var list = Encoding.ASCII.GetString(buffer.Take(length).ToArray()).Split('\0').ToList();
-            list.Sort();
+            var list = GB2132.GetString(buffer.Take(length).ToArray()).Split('\0').ToList();
+            //list.Sort();
             list = list.Select(x => x.Trim()).ToList();
             list = list.Where(v => !string.IsNullOrEmpty(v)).Where(v => v[0] != '#').ToList();
             return list;
