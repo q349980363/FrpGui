@@ -67,7 +67,11 @@
             </Grid.ColumnDefinitions>
             <ScrollViewer Grid.Column="1">
                 <StackPanel>
-                    <Button Click="menuItem_add_Click" Padding="0,4,0,4">添加新配置项</Button>
+                    <ItemsControl Margin="10,0">
+                        <GroupBox Header="操作">
+                            <Button Click="menuItem_add_Click" Padding="0,4,0,4">添加新配置项</Button>
+                        </GroupBox>
+                    </ItemsControl>
                     <ItemsControl Margin="10" ItemsSource="{Binding SectionList}" d:ItemsSource="{Binding DSampleData}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
