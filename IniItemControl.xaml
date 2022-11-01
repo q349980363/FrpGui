@@ -26,8 +26,7 @@
         </DataTemplate>
     </UserControl.ContentTemplate>-->
     <DockPanel Name="dockPanel" Margin="0 5" d:Background="#fff">
-
-        <TextBlock DockPanel.Dock="Bottom" Name="label_translation" Text="{Binding Header}" Foreground="#FF676767"></TextBlock>
+       <TextBlock DockPanel.Dock="Bottom" Name="label_translation1" Text="{Binding Comment}" Foreground="#FF676767"></TextBlock>
         <!--<TextBlock Name="textBlock" Text="{Binding IniData.Key}"></TextBlock>-->
 
         <Grid DataContext="{Binding }">
@@ -36,9 +35,9 @@
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
-            <TextBlock x:Name="label_key" Text="{Binding IniData.Key}" Padding="0"></TextBlock>
-            <TextBox IsReadOnly="True" x:Name="textBox_value" Text="{Binding IniData.Value}" d:Text="设置值" Grid.Column="1" VerticalContentAlignment="Center"></TextBox>
-            <TextBox x:Name="textBox__key" Text="{Binding IniData.Key}" Grid.Column="0" VerticalContentAlignment="Center">
+            <TextBlock x:Name="label_key" Text="{Binding Key}" Padding="0"></TextBlock>
+            <TextBox IsReadOnly="True" x:Name="textBox_value" Text="{Binding Value}" d:Text="设置值" Grid.Column="1" VerticalContentAlignment="Center"></TextBox>
+            <TextBox x:Name="textBox__key" Text="{Binding Key}" Grid.Column="0" VerticalContentAlignment="Center">
                 <TextBox.Style>
                     <Style TargetType="TextBox">
                         <Style.Triggers>
@@ -49,7 +48,7 @@
                     </Style>
                 </TextBox.Style>
             </TextBox>
-            <TextBox x:Name="textBox__value" Text="{Binding IniData.Value}" Grid.Column="1" VerticalContentAlignment="Center">
+            <TextBox x:Name="textBox__value" Text="{Binding Value}" Grid.Column="1" VerticalContentAlignment="Center">
                 <TextBox.Style>
                     <Style TargetType="TextBox">
                         <Style.Triggers>

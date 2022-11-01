@@ -57,7 +57,7 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Button Content="{Binding Section}" Click="Button_Click_2"></Button>
+                                <Button Content="{Binding .}" Click="Button_Click_2"></Button>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -85,7 +85,7 @@
             <ItemsControl Margin="10" ItemsSource="{Binding KeyList}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <local:IniItemControl IsEditor="true" IniData="{Binding .}" Click="IniItemControl_Click"></local:IniItemControl>
+                        <local:IniItemControl IsEditor="true" Key="{Binding Name}" Value="{Binding Value}" Comments="{Binding Comments}" Click="IniItemControl_Click"></local:IniItemControl>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

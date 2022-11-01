@@ -1,8 +1,12 @@
-﻿using System;
+﻿using IniFile;
+using Octokit;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Permissions;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,24 +19,40 @@ namespace FrpGui {
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged {
         static MainWindow() {
-            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+      
         }
         public MyCommand[] EXEList { get; set; }
         public MyCommand[] ConfigList { get; set; }
-        public BindingList<IniData> SectionList { get; set; } = new BindingList<IniData>();
+        public BindingList<IniFile.Section> SectionList { get; set; } = new BindingList<IniFile.Section>();
 
-        private IniFile ini = new IniFile("FrpGui.ini");
+        /// <summary>
+        /// 配置文件
+        /// </summary>
+        static public Ini ini = new Ini("FrpGui.ini");
+
+
 
         public string path_exe { get; set; }
         public string path_config { get; set; }
 
         public MainWindow() {
-
-
-
             InitFile();
             DataContext = this;
             InitializeComponent();
+            Task.Factory.StartNew(async () => {
+                try {
+                    var client = new GitHubClient(new ProductHeaderValue("my-cool-app"));
+                    var releases = await client.Repository.Release.GetAll("fatedier", "frp");
+                    var latest = releases[0];
+                    this.Dispatcher.Invoke(() => {
+                        run_frpversion.Text = "frp版本:" + latest.Name;
+                    });
+                } catch (Exception e) {
+
+                    throw;
+                }
+
+            });
         }
 
         public ICommand GoCommand { get; private set; }
@@ -47,15 +67,21 @@ namespace FrpGui {
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private void LoadConfig(string path) {
-            var ini = new IniFile(path);
-            var sectionList = ini.ReadList(null, null).OrderBy(v => v);
+            if (string.IsNullOrEmpty(path)) {
+                return;
+            }
+            var ini = new Ini(path);
+            //var b = ini["a"];
+            var sectionList = ini.OrderBy(v => v.Name);
             this.SectionList.Clear();
-            sectionList.Select(v => new IniData(ini, v)).ToList().ForEach(v => this.SectionList.Add(v));
+            sectionList.ToList().ForEach(v => {
+                this.SectionList.Add(v);
+            });
         }
 
         private void InitFile() {
-            path_exe = ini.Read("path_exe", "app");
-            path_config = ini.Read("path_config", "app");
+            path_exe = ini["app"]["path_exe"];
+            path_config = ini["app"]["path_config"];
             EXEList = System.IO.Directory.GetFiles(".\\", "*.exe").Select(v => new MyCommand { Text = v }).ToArray();
             ConfigList = System.IO.Directory.GetFiles(".\\", "*.ini").Select(v => new MyCommand { Text = v }).ToArray();
             this.EXEList.ToList().ForEach(item => {
@@ -64,6 +90,7 @@ namespace FrpGui {
             this.ConfigList.ToList().ForEach(item => {
                 item.Checked = item.Text == path_config;
             });
+
             LoadConfig(path_config);
         }
 
@@ -175,12 +202,14 @@ namespace FrpGui {
 
             public event PropertyChangedEventHandler? PropertyChanged;
         }
+
         private void MenuItem_EXE_Click(object sender, RoutedEventArgs e) {
             var item = sender as MenuItem;
             var data = item.DataContext as MyCommand;
             this.path_exe = data.Text;
-            ini.Write("path_exe", data.Text, "app");
-
+            //ini.Write("path_exe", data.Text, "app");
+            ini["app"]["path_exe"] = data.Text;
+            ini.SaveTo("FrpGui.ini");
             this.EXEList.ToList().ForEach(item => {
                 item.Checked = item == data;
             });
@@ -189,42 +218,92 @@ namespace FrpGui {
             var item = sender as MenuItem;
             var data = item.DataContext as MyCommand;
             this.path_config = data.Text;
-            ini.Write("path_config", data.Text, "app");
+            ini["app"]["path_config"] = data.Text;
+            ini.SaveTo("FrpGui.ini");
             this.ConfigList.ToList().ForEach(item => {
                 item.Checked = item == data;
             });
             LoadConfig(path_config);
         }
 
+        /// <summary>
+        /// 删除
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void IniSectionControl_ClickDel(object sender, RoutedEventArgs e) {
             var item = sender as IniSectionControl;
-            var data = item.DataContext as IniData;
-            //this.SectionList.Remove(data);
-            data.File.Write(null, null, data.Section);
+            var data = item.DataContext as IniFile.Section;
+            this.SectionList.Remove(data);
+            //用旧版本删除也无所谓
+            _IniFile.Write(null, null, data.Name, path_config);
             LoadConfig(path_config);
         }
 
+        /// <summary>
+        /// 点击编辑  点击前点击后?
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void IniSectionControl_ClickEditor(object sender, RoutedEventArgs e) {
             var item = sender as IniSectionControl;
-            var data = item.DataContext as IniData;
+            var data = item.DataContext as IniFile.Section;
+
+
+
+            var inidata = new Ini(path_config);
+            var win = new EditorWindow(inidata, data.Name);
+            win.Owner = Window.GetWindow(this);
+            win.ShowDialog();
+            if (win.DialogResult != true) {
+                return;
+            }
+
+            if (win.NewName != win.OldName) {
+                //也就是说改名了
+                inidata[win.OldName].Name = win.NewName;
+            }
+
+            if (inidata[win.NewName] == null) {
+                inidata.Add(new Section(win.NewName));
+            }
+
+            inidata.SaveTo(path_config);
+
+            //IniData.File.Write(null, null, win.OldName);
+            //主界面处理编辑逻辑
             LoadConfig(path_config);
         }
 
-        //添加新配置项目
+        /// <summary>
+        /// 新增配置项
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void menuItem_add_Click(object sender, RoutedEventArgs e) {
-            var inidata = new IniData(path_config);
-            var win = new EditorWindow(inidata, "新增项");
+            var inidata = new Ini(path_config);
+            var win = new EditorWindow(inidata, "");
             win.Owner = Window.GetWindow(this);
             win.ShowDialog();
             if (win.DialogResult != true || string.IsNullOrEmpty(win.NewName)) {
                 return;
             }
+            if (string.IsNullOrEmpty(win.NewName)) {
+                return;
+            }
 
-            //ini.Write(null, null, win.OldName);
+            inidata = new Ini(path_config);
 
+            if (inidata[win.NewName] == null) {
+                inidata.Add(new Section(win.NewName));
+            }
+            //TODO 新增写出等下写.
             win.KeyList.ToList().ForEach(v => {
-                inidata.File.Write(v.Key, v.Value, win.NewName);
+                inidata[win.NewName].Add(v);
+                //inidata.File.Write(, v.Value, win.NewName);
             });
+      
+            inidata.SaveTo(path_config);
             LoadConfig(path_config);
         }
     }

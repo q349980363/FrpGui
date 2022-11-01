@@ -4,17 +4,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FrpGui"
-        d:DataContext="{d:DesignInstance Type=local:IniData}"
         mc:Ignorable="d"
         Title="Frp Gui" Height="800" Width="800" Closing="Window_Closing" Initialized="Window_Initialized" WindowStartupLocation="CenterScreen">
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBarItem>Frp GUI 0.0.1</StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right">
-                <TextBlock><Run>运行状态</Run> <Run>运行中</Run></TextBlock>
+                <TextBlock><Run Name="run_frpversion" Foreground="#FF2F4FFF" d:Text="frp最新版本" Cursor="Hand" ToolTip="点击下载"></Run> <Run>运行状态</Run> <Run>运行中</Run></TextBlock>
             </StatusBarItem>
         </StatusBar>
-        <Menu DockPanel.Dock="Top" Height="30">
+        <Menu DockPanel.Dock="Top" Height="20">
             <Menu.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Grid>
@@ -23,6 +22,8 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="20" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
@@ -52,12 +53,15 @@
                     </Style>
                 </MenuItem.ItemContainerStyle>
             </MenuItem>
+            
+            <MenuItem Grid.Column="4" Header="启动" Name="menuItem_start1" Click="menuItem_start_Click" ></MenuItem>
+            <!--<Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"  Grid.Column="5" Margin="0,10" BorderBrush="#FFBDBDBD" BorderThickness="1" Background="{x:Null}"></Separator>-->
 
-            <MenuItem Grid.Column="4" Header="启动" Name="menuItem_start" Click="menuItem_start_Click" IsChecked="True"></MenuItem>
-            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"  Grid.Column="5" Margin="0,3" BorderBrush="#FFBDBDBD" BorderThickness="1" Background="{x:Null}"></Separator>
-            <MenuItem Grid.Column="6" Header="停止" Name="menuItem_stop" Click="menuItem_stop_Click" IsCheckable="True" IsEnabled="False"></MenuItem>
+            <MenuItem Grid.Column="6" Header="启动" Name="menuItem_start" Click="menuItem_start_Click" IsChecked="True"></MenuItem>
             <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"  Grid.Column="7" Margin="0,3" BorderBrush="#FFBDBDBD" BorderThickness="1" Background="{x:Null}"></Separator>
-            <MenuItem Grid.Column="8" Header="重启" Name="menuItem_restart" Click="menuItem_restart_Click" IsEnabled="False"></MenuItem>
+            <MenuItem Grid.Column="8" Header="停止" Name="menuItem_stop" Click="menuItem_stop_Click" IsCheckable="True" IsEnabled="False"></MenuItem>
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"  Grid.Column="9" Margin="0,3" BorderBrush="#FFBDBDBD" BorderThickness="1" Background="{x:Null}"></Separator>
+            <MenuItem Grid.Column="10" Header="重启" Name="menuItem_restart" Click="menuItem_restart_Click" IsEnabled="False"></MenuItem>
         </Menu>
 
         <Grid>
@@ -76,7 +80,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <!--<Label Content="{Binding .}"></Label>-->
-                                <local:IniSectionControl IniData="{Binding .}" ClickDel="IniSectionControl_ClickDel" ClickEditor="IniSectionControl_ClickEditor"></local:IniSectionControl>
+                                <local:IniSectionControl Section="{Binding .}" ClickDel="IniSectionControl_ClickDel" ClickEditor="IniSectionControl_ClickEditor"></local:IniSectionControl>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
