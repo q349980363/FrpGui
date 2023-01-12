@@ -19,7 +19,7 @@ namespace FrpGui {
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged {
         static MainWindow() {
-      
+
         }
         public MyCommand[] EXEList { get; set; }
         public MyCommand[] ConfigList { get; set; }
@@ -67,16 +67,21 @@ namespace FrpGui {
         public event PropertyChangedEventHandler? PropertyChanged;
 
         private void LoadConfig(string path) {
-            if (string.IsNullOrEmpty(path)) {
+            try {
+                if (string.IsNullOrEmpty(path)) {
+                    return;
+                }
+                var ini = new Ini(path);
+                //var b = ini["a"];
+                var sectionList = ini.OrderBy(v => v.Name);
+                this.SectionList.Clear();
+                sectionList.ToList().ForEach(v => {
+                    this.SectionList.Add(v);
+                });
+            } catch (Exception) {
+                MessageBox.Show("加载失败!", "提示", MessageBoxButton.OK);
                 return;
             }
-            var ini = new Ini(path);
-            //var b = ini["a"];
-            var sectionList = ini.OrderBy(v => v.Name);
-            this.SectionList.Clear();
-            sectionList.ToList().ForEach(v => {
-                this.SectionList.Add(v);
-            });
         }
 
         private void InitFile() {
@@ -254,7 +259,7 @@ namespace FrpGui {
             var inidata = new Ini(path_config);
             var win = new EditorWindow(inidata, data.Name);
             win.Owner = Window.GetWindow(this);
-            win.ShowDialog();
+            var ret = win.ShowDialog();
             if (win.DialogResult != true) {
                 return;
             }
@@ -267,12 +272,15 @@ namespace FrpGui {
             if (inidata[win.NewName] == null) {
                 inidata.Add(new Section(win.NewName));
             }
+            if (ret.Value) {
 
-            inidata.SaveTo(path_config);
+                inidata.SaveTo(path_config);
 
-            //IniData.File.Write(null, null, win.OldName);
-            //主界面处理编辑逻辑
-            LoadConfig(path_config);
+                //IniData.File.Write(null, null, win.OldName);
+                //主界面处理编辑逻辑
+                LoadConfig(path_config);
+            }
+
         }
 
         /// <summary>
@@ -302,7 +310,7 @@ namespace FrpGui {
                 inidata[win.NewName].Add(v);
                 //inidata.File.Write(, v.Value, win.NewName);
             });
-      
+
             inidata.SaveTo(path_config);
             LoadConfig(path_config);
         }

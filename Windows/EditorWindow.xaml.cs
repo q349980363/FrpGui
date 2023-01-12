@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,17 +16,21 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace FrpGui {
+    public class A {
+
+        public string Name { get; set; }
+        public string Value { get; set; }
+    }
+
     /// <summary>
     /// EditorWindow.xaml 的交互逻辑
     /// </summary>
     public partial class EditorWindow : Window {
-        public string Key { get; set; }
-        public string Value { get; set; }
+        public string Key { get; set; } = "";
+        public string Value { get; set; } = "";
 
-        public string OldName { get; set; }
-        public string NewName { get; set; }
-
-        //private IniFile ini = new IniFile("FrpGui.ini");
+        public string OldName { get; set; } = "";
+        public string NewName { get; set; } = "";
 
 
         /// <summary>
@@ -39,10 +44,11 @@ namespace FrpGui {
         public BindingList<IniFile.Section> TemplateList { get; set; } = new BindingList<IniFile.Section>();
 
 
-
-        Ini ini;
+        /// <summary>
+        /// 这是一个临时加载的数据,修改不会影响其他内容
+        /// </summary>
+        private Ini ini;
         public EditorWindow() {
-            //var list = MainWindow.ini.Select(v => v.Name);
             MainWindow.ini.ToList().ForEach(v => {
                 TemplateList.Add(v);
             });
@@ -69,6 +75,7 @@ namespace FrpGui {
         //}
 
         void init() {
+
             this.KeyList.Clear();
 
             if (ini[OldName] == null) {
@@ -128,10 +135,6 @@ namespace FrpGui {
         private void Button_Click_2(object sender, RoutedEventArgs e) {
             var item = sender as Button;
             var data = item.DataContext as IniFile.Section;
-            //var keyList = ini.ReadList(null, data.Section);
-
-
-
             //KeyList.Clear();
             foreach (var key in data) {
                 //key.Items
@@ -159,6 +162,8 @@ namespace FrpGui {
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Button_Click_4(object sender, RoutedEventArgs e) {
+
+
             if (string.IsNullOrEmpty(NewName)) {
                 MessageBox.Show("请输入项名称!", "提示", MessageBoxButton.OK);
                 return;
@@ -167,6 +172,11 @@ namespace FrpGui {
                 MessageBox.Show("导入数据空!", "提示", MessageBoxButton.OK);
                 return;
             }
+            //var test = this.ini[OldName];
+            //foreach (var item in test) {
+            //    Debug.WriteLine(item.ToString());
+            //}
+
             this.DialogResult = true;
         }
     }

@@ -5,6 +5,7 @@ using System.Windows;
 using System.Linq;
 using System.Windows.Controls;
 using static System.Net.Mime.MediaTypeNames;
+using System.Diagnostics;
 
 namespace FrpGui {
 
@@ -27,7 +28,7 @@ namespace FrpGui {
                 if (!Comments.Any()) {
                     return "";
                 }
-                return Comments.Select(v=>v.Text).Aggregate((longest, next) => {
+                return Comments.Select(v => v.Text).Aggregate((longest, next) => {
                     return longest + next;
                 });
             }
@@ -56,11 +57,11 @@ namespace FrpGui {
             }
         }
 
-        public static readonly DependencyProperty KeyProperty = DependencyProperty.Register("Key", typeof(string), typeof(IniItemControl), new PropertyMetadata(null));
+        public static readonly DependencyProperty KeyProperty = DependencyProperty.Register("Key", typeof(string), typeof(IniItemControl), new FrameworkPropertyMetadata(default(string), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public string Value {
             get {
-                return (string)GetValue(ValueProperty);
+                return (PropertyValue)GetValue(ValueProperty);
             }
             set {
                 SetValue(ValueProperty, value);
@@ -68,52 +69,20 @@ namespace FrpGui {
             }
         }
 
-        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(string), typeof(IniItemControl), new PropertyMetadata(null));
+        
 
+        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(string), typeof(IniItemControl), new FrameworkPropertyMetadata(default(string), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e) {
+            base.OnPropertyChanged(e);
+        }
         static void PropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            //d.SetValue(IniDataProperty, e.NewValue);
             var obj = (IniItemControl)d;
-            //obj.loadData();
         }
 
         public bool IsEditor { get; set; }
 
         public static readonly DependencyProperty IsEditorProperty = DependencyProperty.Register("IsEditor", typeof(bool), typeof(IniItemControl), new PropertyMetadata(null));
 
-
-
-        //public static string translation(string txt) {
-        //    switch (txt) {
-        //        case "type":
-        //            return "类型 代理类型\r\n[tcp, udp, http, https, stcp, sudp, xtcp, tcpmux]";
-
-        //        case "server_addr":
-        //            return "服务器地址";
-
-        //        case "server_port":
-        //            return "服务器端口";
-
-        //        case "token":
-        //            return "密钥";
-
-        //        case "local_ip":
-        //            return "本地服务 IP \r\n默认值:127.0.0.1";
-
-        //        case "local_port":
-        //            return "本地服务端口 \r\n配合 local_ip";
-
-        //        case "remote_port":
-        //            return "服务端绑定的端口\r\n用户访问此端口的请求会被转发到 local_ip:local_port";
-
-        //        case "custom_domains":
-        //            return "服务器绑定自定义域名\r\n是(和 subdomain 两者必须配置一个)";
-        //        case "subdomain":
-        //            return "自定义子域名\r\n是(和 custom_domains 两者必须配置一个)";
-
-        //        default:
-        //            return txt;
-        //    }
-        //}
         public static readonly RoutedEvent ClickEvent =
             EventManager.RegisterRoutedEvent("ClickEvent", RoutingStrategy.Bubble,
                 typeof(RoutedPropertyChangedEventArgs<Object>), typeof(IniItemControl));
@@ -134,6 +103,13 @@ namespace FrpGui {
             RoutedEventArgs args2 = new RoutedEventArgs(ClickEvent, this);
             //引用自定义路由事件
             this.RaiseEvent(args2);
+        }
+
+        private void textBox__value_TextChanged(object sender, TextChangedEventArgs e) {
+            //var text_box = sender as TextBox;
+            //Value = text_box.Text;
+            //Value = "123";
+            //SetValue(ValueProperty, Value);
         }
     }
 }

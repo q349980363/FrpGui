@@ -35,9 +35,11 @@ namespace FrpGui {
         public BindingList<IniFile.Property> KeyList { get; set; } = new BindingList<IniFile.Property>();
 
         static void PropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-            //d.SetValue(IniDataProperty, e.NewValue);
-            var obj = (IniSectionControl)d;
-            obj.loadData();
+            //当项名被设置时  加载名称
+            if (e.Property == SectionProperty) {
+                var obj = (IniSectionControl)d;
+                obj.loadData();
+            }
         }
 
         public void loadData() {
@@ -53,43 +55,9 @@ namespace FrpGui {
         }
 
 
-        public string Header {
-            get {
-                //if (translation(Section) == Section) {
-                //    return Section;
-                //} else {
-                //    return $"{Section} [{translation(Section)}]";
-                //}
-                return "";
-            }
-        }
-
-        public static string translation(string txt) {
-            switch (txt) {
-                case "common":
-                    return "公共设置";
-
-                default:
-                    return txt;
-            }
-        }
-
-        //删除
+        //编辑
         private void Button_Click(object sender, RoutedEventArgs e) {
             //编辑也要跳转到上级才行
-            //还有删除某一项
-            //var win = new EditorWindow(ini, Section);
-            //win.Owner = Window.GetWindow(this);
-            //win.ShowDialog();
-            //if (win.DialogResult != true) {
-            //    return;
-            //}
-            //IniData.File.Write(null, null, win.OldName);
-
-            //win.KeyList.ToList().ForEach(v => {
-            //    IniData.File.Write(v.Key, v.Value, win.NewName);
-            //});
-
             RoutedEventArgs args2 = new RoutedEventArgs(ClickEditorEvent, this);
             //引用自定义路由事件
             this.RaiseEvent(args2);
@@ -115,6 +83,7 @@ namespace FrpGui {
             remove { RemoveHandler(ClickEditorEvent, value); }
         }
 
+        //跳转上级
         private void Button_Click_1(object sender, RoutedEventArgs e) {
             RoutedEventArgs args2 = new RoutedEventArgs(ClickDelEvent, this);
             //引用自定义路由事件
