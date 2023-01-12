@@ -33,6 +33,7 @@
                     </Grid>
                 </ItemsPanelTemplate>
             </Menu.ItemsPanel>
+
             <MenuItem Grid.Column="0" Header="{Binding path_exe}" HeaderStringFormat="当前EXE:{0}" Name="menuItem_exe" Width="200" ItemsSource="{Binding EXEList}">
                 <MenuItem.ItemContainerStyle>
                     <Style TargetType="{x:Type MenuItem}">
