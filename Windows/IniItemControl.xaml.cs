@@ -18,6 +18,7 @@ namespace FrpGui {
             InitializeComponent();
             //grid.DataContext = this;
             dockPanel.DataContext = this;
+            //Value = "123";
         }
 
         public string Comment {
@@ -59,7 +60,7 @@ namespace FrpGui {
 
         public static readonly DependencyProperty KeyProperty = DependencyProperty.Register("Key", typeof(string), typeof(IniItemControl), new FrameworkPropertyMetadata(default(string), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
-        public string Value {
+        public PropertyValue Value {
             get {
                 return (PropertyValue)GetValue(ValueProperty);
             }
@@ -71,7 +72,7 @@ namespace FrpGui {
 
         
 
-        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(string), typeof(IniItemControl), new FrameworkPropertyMetadata(default(string), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(PropertyValue), typeof(IniItemControl), new FrameworkPropertyMetadata(default(PropertyValue), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e) {
             base.OnPropertyChanged(e);
         }

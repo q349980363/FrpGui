@@ -6,6 +6,10 @@
              xmlns:local="clr-namespace:FrpGui"
              mc:Ignorable="d" 
              d:DesignWidth="300">
+    <UserControl.Resources>
+
+        <local:PropertyValueConverter x:Key="priceConverter" />
+    </UserControl.Resources>
 
     <DockPanel Name="dockPanel" Margin="5 2" d:Background="#fff">
         <TextBlock DockPanel.Dock="Bottom" Name="label_translation1" Text="{Binding Comment}" Foreground="#FF676767">
@@ -37,7 +41,7 @@
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <TextBox x:Name="textBox__key" Text="{Binding Key}" d:Text="属性名" Grid.Column="0" VerticalContentAlignment="Center"></TextBox>
-            <TextBox x:Name="textBox__value" Text="{Binding Value}" d:Text="值" Grid.Column="1" VerticalContentAlignment="Center" TextChanged="textBox__value_TextChanged"></TextBox>
+            <TextBox x:Name="textBox__value" Text="{Binding Value, Converter={StaticResource priceConverter}}" d:Text="值" Grid.Column="1" VerticalContentAlignment="Center" TextChanged="textBox__value_TextChanged"></TextBox>
             <Button Grid.Column="2" VerticalContentAlignment="Center" Click="Button_Click" IsTabStop="false">删除</Button>
         </Grid>
 
@@ -59,7 +63,7 @@
             </DockPanel.Style>
             <TextBlock DockPanel.Dock="Left"  Text="{Binding Key}" ></TextBlock>
             <TextBlock Text=" = " ></TextBlock>
-            <TextBlock Text="{Binding Value}" ></TextBlock>
+            <TextBlock Text="{Binding Value, Converter={StaticResource priceConverter}}" ></TextBlock>
         </DockPanel>
     </DockPanel>
 </UserControl>

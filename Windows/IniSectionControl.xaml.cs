@@ -1,6 +1,7 @@
 ﻿using IniFile;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -43,6 +44,7 @@ namespace FrpGui {
         }
 
         public void loadData() {
+           
             KeyList.Clear();
             if (Section == null) {
                 return;
@@ -51,6 +53,8 @@ namespace FrpGui {
             }
             foreach (var key in Section) {
                 KeyList.Add(key);
+                //key.Name
+                //Debug.WriteLine(key.Value);
             }
         }
 
